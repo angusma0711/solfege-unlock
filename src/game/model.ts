@@ -1,22 +1,24 @@
-export type Solfege = 'do' | 'mi' | 'sol';
-export const REFERENCE_MIDI: Record<Solfege, number> = { do: 60, mi: 64, sol: 67 };
+export type Solfege = 'do' | 're' | 'mi';
+export const SOLFEGE_LABELS: Record<Solfege,string> = {do:'Do',re:'Re',mi:'Mi'};
+export const REFERENCE_MIDI: Record<Solfege, number> = { do: 60, re: 62, mi: 64 };
 export type StaffMapping = { source: string; lines: [number, number]; positions: Record<Solfege, number>; marker: { x: number; y: number } };
-// Verified against IMG_5634.jpeg (2026-10-27). Upper/lower lines are one
-// diatonic third apart: do in the space, mi on upper line, sol above it.
+// Staff lines and d anchor checked against IMG_5634.jpeg (2026-10-27).
+// Source d anchor stays in the space; the updated Do–Re–Mi exercise uses
+// successive diatonic steps: Do=190, Re=170, Mi=150 (upper line).
 // Empty, unstemmed oval noteheads match the source; no clef or ledger lines.
 // Printed coordinates and playback pitch remain independent configurations.
 export const STAFF_MAPPING: StaffMapping = {
   source: 'IMG_5634.jpeg, supplied examination scope, sight-singing example',
   lines: [150, 230],
-  positions: { do: 190, mi: 150, sol: 110 },
+  positions: { do: 190, re: 170, mi: 150 },
   marker: { x: 155, y: 190 },
 };
 export const BANK: readonly (readonly (readonly Solfege[])[])[] = [
-  [['do'], ['mi'], ['sol']],
-  [['do', 'do', 'mi'], ['sol', 'sol', 'mi'], ['mi', 'do', 'mi'], ['mi', 'sol', 'mi']],
-  [['do', 'mi', 'sol'], ['sol', 'mi', 'do'], ['mi', 'mi', 'sol', 'mi'], ['sol', 'mi', 'do', 'mi']],
+  [['do'], ['re'], ['mi']],
+  [['do', 'do', 're'], ['mi', 'mi', 're'], ['re', 'do', 're'], ['re', 'mi', 're']],
+  [['do', 're', 'mi'], ['mi', 're', 'do'], ['re', 're', 'mi', 're'], ['mi', 're', 'do', 're']],
 ];
-export const FINAL: readonly Solfege[] = ['do', 'mi', 'sol', 'do'];
+export const FINAL: readonly Solfege[] = ['do', 're', 'mi', 'do'];
 export const STAGES = ['找到唱名', '唱名接龍', '小隊解鎖'];
 export function makeQuestions(random = Math.random): Solfege[][] {
   return BANK.flatMap(pool => {

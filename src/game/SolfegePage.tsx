@@ -1,7 +1,7 @@
 import { useEffect, useReducer, useRef, useState } from 'react';
 import { FullscreenButton } from '../components/FullscreenButton';
 import { ReferenceAudio } from './audio';
-import { FINAL, STAFF_MAPPING, STAGES, initialGame, makeQuestions, transition, type Solfege, type StaffMapping } from './model';
+import { FINAL, SOLFEGE_LABELS, STAFF_MAPPING, STAGES, initialGame, makeQuestions, transition, type Solfege, type StaffMapping } from './model';
 import './solfege.css';
 import runnerIdle from './assets/runner/idle-0.png';
 import runner0 from './assets/runner/run-0.png';
@@ -35,7 +35,7 @@ function Journey({ collected }: { collected: number }) {
 
 }
 function Score({ notes, mapping, revealed, active }: { notes: readonly Solfege[]; mapping: StaffMapping; revealed: boolean; active: number }) {
-  return <svg className="su-score" viewBox="0 75 1000 245" role="img" aria-label={revealed ? `二線譜：${notes.join('、')}` : '二線譜題目，請看音符位置唱'}>
+  return <svg className="su-score" viewBox="0 75 1000 245" role="img" aria-label={revealed ? `二線譜：${notes.map(note=>SOLFEGE_LABELS[note]).join('、')}` : '二線譜題目，請看音符位置唱'}>
     {notes.map((_, index) => active === index && <rect className="su-note-highlight" key={index} x={285 + (index + 0.5) * 600 / notes.length - 48} y="65" width="96" height="195" rx="24" fill="#f7d990" fillOpacity=".65"/>)}
     {mapping.lines.map(y => <line className="su-staff-line" key={y} x1="95" x2="950" y1={y} y2={y} stroke="#344b46" strokeWidth="4" />)}
     <g className="su-d-marker" aria-label="d 定位提示"><ellipse cx={mapping.marker.x} cy={mapping.marker.y} rx="34" ry="25" fill="none" stroke="#344b46" strokeWidth="3"/><text x={mapping.marker.x} y={mapping.marker.y + 15} textAnchor="middle" fontFamily="Georgia, serif" fontSize="48" fill="#344b46">d</text><text x={mapping.marker.x} y="295" textAnchor="middle" fontSize="19" fill="#647c73">定位</text></g>
@@ -43,7 +43,7 @@ function Score({ notes, mapping, revealed, active }: { notes: readonly Solfege[]
       const x = 285 + (index + 0.5) * 600 / notes.length;
       return <g className={`su-note ${active===index?'su-active':''}`} key={index}>
         <ellipse className="su-notehead" cx={x} cy={mapping.positions[note]} rx="34" ry="25" fill="none" stroke="#172c38" strokeWidth="4" />
-        {revealed && <text className="su-solfege-label" x={x} y="295" textAnchor="middle" fontSize="42" fontWeight="700" fill="#172c38">{note}</text>}
+        {revealed && <text className="su-solfege-label" x={x} y="295" textAnchor="middle" fontSize="42" fontWeight="700" fill="#172c38">{SOLFEGE_LABELS[note]}</text>}
       </g>;
     })}
   </svg>;
@@ -92,6 +92,6 @@ export function SolfegePage() {
       <div className="su-decide">{game.screen !== 'final' && <button className="primary" disabled={game.awarded} onClick={() => { stop(); dispatch({ type: 'collect' }); }}>{game.awarded ? '已收集 ✓' : '完成，收集音符'}</button>}{game.awarded ? <button className="primary su-collected" onClick={() => { stop(); dispatch({ type: 'next' }); }}>{game.collected === 6 ? '查看解鎖成果' : '下一題'} →</button> : <button onClick={() => { stop(); dispatch({ type: 'retry' }); }}>再試一次</button>}</div>
     </section>}
     {error && <p className="su-error" role="alert">{error}</p>}
-    <footer className="su-footer"><span>{playingScreen ? '老師給起音 → 學生先唱 → 聽示範比較' : ''}</span><div><button onClick={restart}>重新開始</button><details><summary>教師設定</summary><div className="su-settings"><label>參考調：整體移調<select value={transpose} onChange={e => { stop(); setTranspose(Number(e.target.value)); }}>{Array.from({ length: 13 }, (_, i) => i - 6).map(value => <option key={value} value={value}>{value === 0 ? '原調（do = C4）' : `${value > 0 ? '+' : ''}${value} 半音`}</option>)}</select></label><label>播放速度<select value={slow ? 'slow' : 'normal'} onChange={e => { stop(); setSlow(e.target.value === 'slow'); }}><option value="normal">正常</option><option value="slow">慢速</option></select></label><label>應答組別<input value={group} maxLength={24} onChange={e => setGroup(e.target.value)} /></label><p>真鋼琴錄音，各音等長；原調 do=C4、mi=E4、sol=G4，僅為可調參考音。教師判斷是否完成。本活動在目前裝置操作，不使用跨裝置同步。</p><p className="su-credit">鋼琴錄音：Versilian Studios / VSCO 2，經 tonejs-instruments 提供，<a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noreferrer">CC BY 3.0</a>；播放時作移調及音量處理。</p></div></details></div></footer>
+    <footer className="su-footer"><span>{playingScreen ? '老師給起音 → 學生先唱 → 聽示範比較' : ''}</span><div><button onClick={restart}>重新開始</button><details><summary>教師設定</summary><div className="su-settings"><label>參考調：整體移調<select value={transpose} onChange={e => { stop(); setTranspose(Number(e.target.value)); }}>{Array.from({ length: 13 }, (_, i) => i - 6).map(value => <option key={value} value={value}>{value === 0 ? '原調（Do = C4）' : `${value > 0 ? '+' : ''}${value} 半音`}</option>)}</select></label><label>播放速度<select value={slow ? 'slow' : 'normal'} onChange={e => { stop(); setSlow(e.target.value === 'slow'); }}><option value="normal">正常</option><option value="slow">慢速</option></select></label><label>應答組別<input value={group} maxLength={24} onChange={e => setGroup(e.target.value)} /></label><p>真鋼琴錄音，各音等長；原調 Do=C4、Re=D4、Mi=E4，僅為可調參考音。教師判斷是否完成。本活動在目前裝置操作，不使用跨裝置同步。</p><p className="su-credit">鋼琴錄音：Versilian Studios / VSCO 2，經 tonejs-instruments 提供，<a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noreferrer">CC BY 3.0</a>；播放時作移調及音量處理。</p></div></details></div></footer>
   </main>;
 }
