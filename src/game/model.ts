@@ -3,14 +3,14 @@ export const SOLFEGE_LABELS: Record<Solfege,string> = {do:'Do',re:'Re',mi:'Mi'};
 export const REFERENCE_MIDI: Record<Solfege, number> = { do: 60, re: 62, mi: 64 };
 export type StaffMapping = { source: string; lines: [number, number]; positions: Record<Solfege, number>; marker: { x: number; y: number } };
 // Staff lines and d anchor checked against IMG_5634.jpeg (2026-10-27).
-// Source d anchor stays in the space; the updated Do–Re–Mi exercise uses
-// successive diatonic steps: Do=190, Re=170, Mi=150 (upper line).
+// Preserve the three vertical locations in the supplied two-line example:
+// Do=190 (between lines), Re=150 (upper line), Mi=110 (above upper line).
 // Empty, unstemmed oval noteheads match the source; no clef or ledger lines.
 // Printed coordinates and playback pitch remain independent configurations.
 export const STAFF_MAPPING: StaffMapping = {
   source: 'IMG_5634.jpeg, supplied examination scope, sight-singing example',
   lines: [150, 230],
-  positions: { do: 190, re: 170, mi: 150 },
+  positions: { do: 190, re: 150, mi: 110 },
   marker: { x: 155, y: 190 },
 };
 export const BANK: readonly (readonly (readonly Solfege[])[])[] = [
